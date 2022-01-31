@@ -1,11 +1,49 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import Home from './components/Home';
+import Login from './auth/Login';
+import Signup from './auth/Signup';
+import Header from './components/Header';
+import GlobalStyle from './utils/style/GlobalStyle';
+import Error from './components/Error';
+import Articles from './pages/Articles';
+import Article from './pages/Article';
+import Edit from './components/Edit'
+import AddArticle from './components/AddArticle'
 
 ReactDOM.render(
   <React.StrictMode>
-   <App />
+    <Router>
+      <GlobalStyle />
+      <Header />
+      <Switch>
+        <Route exact path='/'>
+          <Home />
+        </Route>
+        <Route exact path="/login">
+          <Login />
+        </Route>
+        <Route exact path='/signup'>
+          <Signup />
+        </Route>
+        <Route exact path="/articles">
+          <Articles />
+        </Route>
+        <Route exact path="/articles/:id">
+          <Article />
+        </Route>
+        <Route exact path="/articles/:id/edit">
+          <Edit />
+        </Route>
+        <Route exact path="/articles-post">
+          <AddArticle />
+        </Route>
+        <Route path="">
+          <Error />
+        </Route>
+      </Switch>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

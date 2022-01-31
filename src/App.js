@@ -1,11 +1,9 @@
-import Login from "./auth/Login";
-
 
 function App() {
+
   return (
     <div>
-      <h1>.</h1>
-      <Login />
+      <h1>Bienvenue sur notre application web</h1>
     </div>
   );
 }
