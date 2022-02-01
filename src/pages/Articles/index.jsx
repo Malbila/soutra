@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import Category from "../../components/Category";
 
 const Container = styled.div`
     position: relative;
@@ -79,16 +80,20 @@ const ItemInfo = styled.div`
     border-radius: 0 0 25px 25px;
     height: 40%;
     width: 364px;
-    background-color: rgb(0, 0, 0, 0.6);
+    background-color: rgb(0, 0, 0, 0.8);
 `
 
-function Articles({token}) {
+function Articles() {
     const [ data, setData ] = useState([])
+
+// ************************************************** Data fetching *************************************************
 
     useEffect(() => {
         async function fetchData() {
           try {
-            const response = await fetch('http://localhost:3000/api/stuff',{headers: {authorizaton: `Bearer ${token}`}})
+            const response = await fetch('http://localhost:3000/api/article', {
+                headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+            })
             const data = await response.json()
             setData(data)
           } catch(error) {
@@ -97,6 +102,48 @@ function Articles({token}) {
         }
         fetchData()
     }, [])
+
+  
+
+    const articlesData = data && data
+
+
+    // ******************************************* Category filter ****************************************************
+
+    const category = articlesData.reduce(
+      (acc, item) => acc.includes(item.category) ? acc: acc.concat(item.category),
+      []
+    )
+
+    // ****************************************************** Conter ***********************************************
+
+    const number = () => {
+      let i = 0
+      //let cat = ''
+      const categories = []
+      for(let m = 0; m<=category.length-1; m++) {
+        for(let n = 0; n<=articlesData.length-1; n++) {
+            if(articlesData[n].category === category[m]){
+            i += 1
+          }
+        }
+        categories.push({ category: category[m], number: i})
+        i = 0
+      }
+      return categories
+    }
+// *********************************************** Category number *******************************************
+
+    const categoryNumber = (cat) => {
+        let i = 0
+        for(let n = 0; n<=articlesData.length-1; n++) {
+            if(articlesData[n].category === cat){
+                i += 1
+            }
+        }
+        return i
+    }
+    
 
     /*,{
                 headers: {authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWViMDY3MTc0ZDU1MDQ4MDdjYjVlNjkiLCJpYXQiOjE2NDM2NDA1NjIsImV4cCI6MTY0MzcyNjk2Mn0.OxbPJ4hyOY3o9wqF-EQH41Y8_osrHFIiyFXogxrD6HM"}
@@ -116,6 +163,7 @@ function Articles({token}) {
                 <ItemInfo>
                     <ItemLabel>{item.title}</ItemLabel>
                     <ItemLabel>{`${item.price} fcfa`}</ItemLabel>
+                    <ItemLabel>{`Disponibles : ${categoryNumber(item.category)}`}</ItemLabel>
                 </ItemInfo>
             </ItemWrapper>
             ))}

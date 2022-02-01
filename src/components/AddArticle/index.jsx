@@ -3,15 +3,15 @@ import { useState } from "react"
 import styled from "styled-components"
 
 const EditWrapper = styled.div`
-    padding: 32px 0;
-    margin: 32px 0;
+    //padding: 32px 0;
+    //margin: 32px 0;
     display: flex;
     flex-direction: column;
     align-items: center; 
     justify-content: center;
 `
 const EditForm = styled.form`
-    padding: 32px 0;
+    //padding: 32px 0;
     margin: 32px 0;
     display: flex;
     flex-direction: column;
@@ -81,6 +81,7 @@ const SaveButton = styled.button`
 
 function AddArticle() {
     const [ title, setTitle ] = useState('')
+    const [ category, setCategory ] = useState('')
     const [ description, setDescription ] = useState('')
     const [ price, setPrice ] = useState(0)
     const [ image, setImageUrl ] = useState({})
@@ -100,7 +101,7 @@ function AddArticle() {
     function handlePost(e) {
         e.preventDefault();
         const file = new FormData();
-        file.append("thing", `{ "title": "${title}", "description": "${description}", "price": "${price}", "imageUrl": "", "userId":"${userId}"}`)
+        file.append("article", `{ "title": "${title}", "description": "${description}", "price": "${price}", "imageUrl": "", "userId":"${userId}", "category": "${category}"}`)
         file.append('image', image);
         const config= {
             headers: {
@@ -111,7 +112,9 @@ function AddArticle() {
  
         
 
-        axios.post("http://localhost:3000/api/stuff",file, config)
+        axios.post("http://localhost:3000/api/article",file, config, {
+            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
             .then(() => window.location.href = '/articles')
             .catch((err) => (err));
     }
@@ -125,6 +128,12 @@ function AddArticle() {
                     type="text" 
                     placeholder="name"
                     onChange={(e) => setTitle(e.target.value)}
+                />
+                <label htmlFor="">Categorie</label>
+                <TitleInput 
+                    type="text" 
+                    placeholder="category"
+                    onChange={(e) => setCategory(e.target.value)}
                 />
                 <label>Chargez une image:</label>
                 <FileInput 

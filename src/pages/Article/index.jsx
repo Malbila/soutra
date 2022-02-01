@@ -51,6 +51,17 @@ const RemoveButton = styled.button`
     }
 `
 
+const SpanWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`
+
+const Span = styled.span`
+    margin: 0 15px;
+    font-size: 18px;
+`
+
 function Article() {
     const { id } = useParams()
     const [ data, setData ] = useState([])
@@ -59,7 +70,9 @@ function Article() {
     useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('http://localhost:3000/api/stuff')
+        const response = await fetch('http://localhost:3000/api/article', {
+            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
         const data = await response.json()
         setData(data)
       } catch (err) {
@@ -72,11 +85,13 @@ function Article() {
     const articleData = data.find(article => article._id === id)
     console.log(articleData)
 
-    const  { title, description, price } = articleData !== undefined 
+    //const  { title, description, price } = articleData !== undefined 
 
     const handleDelete = (e) => {
         e.preventDefault()
-        axios.delete('http://localhost:3000/api/stuff/' +id)
+        axios.delete('http://localhost:3000/api/article/' +id, {
+            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
             .then(() => {
                 //console.log("Object removed")
                 window.location.href = '/articles'
@@ -89,11 +104,11 @@ function Article() {
     return   articleData !== undefined ?  (
         <ArticleWrapper>
             <Image src={articleData && articleData.imageUrl} alt="article" />
-            <div>
-                <span>Nom: { articleData && title}</span>
-                <span>Description: {articleData && description}</span>
-                <span>Prix: {`${articleData && price} fcfa`} </span>
-            </div>
+            <SpanWrapper>
+                <Span><b>Nom</b>: { articleData && articleData.title}</Span> 
+                <Span><b>Description</b>: {articleData && articleData.description}</Span>
+                <Span><b>Prix</b>: {`${articleData && articleData.price} fcfa`} </Span>
+            </SpanWrapper>
             <ButtonWrapper>
                 <Link to={`/articles/${articleData?._id}/edit`}>
                     <EditButton>Modifier</EditButton>

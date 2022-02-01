@@ -54,8 +54,9 @@ function Signup() {
     const [ textValue, setTextValue ] = useState('')
     const [ passValue, setPassValue ] = useState('')
     const [ confirmValue, setConfirmValue ] = useState('')
+    const [ isEditing, setIsEditing ] = useState(false)
 
-    const isValid = passValue === confirmValue
+    const isValid = passValue !== ""  && confirmValue !== "" && passValue === confirmValue
 
     function handleSubmit(e) {
         e.preventDefault()
@@ -90,6 +91,7 @@ function Signup() {
                     value={passValue}
                     onChange={(e) => setPassValue(e.target.value)}
                     required
+                    onMouseDown={() => console.log('ça y est')}
                 />
                 <InputLabel
                     type="password" 
@@ -97,6 +99,7 @@ function Signup() {
                     value={confirmValue}
                     onChange={(e) => setConfirmValue(e.target.value)}
                     required
+                    onMouseDown={() => setIsEditing(true)}
                 />
                 <Button type="submit" disabled={!isValid}>Signup</Button>
             </FormLabel>

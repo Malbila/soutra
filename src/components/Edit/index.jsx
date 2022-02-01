@@ -4,15 +4,15 @@ import axios from "axios"
 import styled from "styled-components"
 
 const EditWrapper = styled.div`
-    padding: 32px 0;
-    margin: 32px 0;
+    // padding: 32px 0;
+    // margin: 32px 0;
     display: flex;
     flex-direction: column;
     align-items: center; 
     justify-content: center;
 `
 const EditForm = styled.form`
-    padding: 32px 0;
+    //padding: 32px 0;
     margin: 32px 0;
     display: flex;
     flex-direction: column;
@@ -84,6 +84,7 @@ function Edit() {
     const { id } = useParams()
     const [ data, setData ] = useState([])
     const [ title, setTitle ] = useState('')
+    const [ category, setCategory ] = useState('')
     const [ description, setDescription ] = useState('')
     const [ price, setPrice ] = useState(0)
     const [ image, setThing ] = useState({})
@@ -91,7 +92,9 @@ function Edit() {
     useEffect(() => {
         async function fetchData() {
           try {
-            const response = await fetch('http://localhost:3000/api/stuff')
+            const response = await fetch('http://localhost:3000/api/article', {
+                headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+            })
             const data = await response.json()
             setData(data)
           } catch (err) {
@@ -106,7 +109,7 @@ function Edit() {
     function handleSubmit(e) {
         e.preventDefault();
         const file = new FormData();
-        file.append("thing", `{ "_id": "${id}", "title": "${title}", "description": "${description}", "price": "${price}", "imageUrl": "", "userId": "${articleData.userId}"}`)
+        file.append("article", `{ "_id": "${id}", "title": "${title === '' ? articleData.title : title}", "description": "${description === '' ? articleData.description : description}", "price": "${price === 0 ? articleData.price : price}", "imageUrl": "${image === {} ? articleData.imageUrl : ""}", "userId": "${articleData.userId}", "category": "${category === '' ? articleData.category : category}"}`)
         file.append('image', image);
         const config= {
             headers: {
@@ -114,10 +117,16 @@ function Edit() {
             }
         }
 
+
         
 
-        axios.put("http://localhost:3000/api/stuff/"+id,file, config)
-            .then((res) => console.log(res))
+        axios.put("http://localhost:3000/api/article/"+id,file, config, {
+            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
+            .then((res) => {
+                console.log(res)
+                window.location.href = `/articles/${id}`
+            })
             .catch((err) => (err));
     }
 
@@ -133,6 +142,13 @@ function Edit() {
                     // placeholder="name"
                     onChange={(e) => setTitle(e.target.value)}
                 />
+                <label htmlFor="">Categorie</label>
+                <TitleInput 
+                    type="text" 
+                    placeholder="category"
+                    defaultValue={articleData && articleData.category}
+                    onChange={(e) => setCategory(e.target.value)}
+                />
                 <label>Chargez une image:</label>
                 <FileInput 
                     type="file" 
@@ -140,7 +156,6 @@ function Edit() {
                     defaultValue={articleData && articleData.imageUrl}
                     onChange={(e) => setThing(e.target.files[0])}
                 />
-                <img src={image.name} alt="" />
                 <label>Description:</label>
                 <DescriptionArea
                     name="description"
