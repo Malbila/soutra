@@ -87,7 +87,8 @@ function Edit() {
     const [ category, setCategory ] = useState('')
     const [ description, setDescription ] = useState('')
     const [ price, setPrice ] = useState(0)
-    const [ image, setThing ] = useState({})
+    const [ quantity, setQuantity ] = useState(0)
+    const [ image, setThing ] = useState(null)
 
     useEffect(() => {
         async function fetchData() {
@@ -105,29 +106,58 @@ function Edit() {
     }, [])
     
     const articleData = data.find(article => article._id === id)
+    console.log(articleData?.imageUrl)
 
     function handleSubmit(e) {
         e.preventDefault();
         const file = new FormData();
-        file.append("article", `{ "_id": "${id}", "title": "${title === '' ? articleData.title : title}", "description": "${description === '' ? articleData.description : description}", "price": "${price === 0 ? articleData.price : price}", "imageUrl": "${image === {} ? articleData.imageUrl : ""}", "userId": "${articleData.userId}", "category": "${category === '' ? articleData.category : category}"}`)
+        file.append("article", `{ "_id": "${id}", "title": "${title === "" ? articleData?.title : title}", "description": "${description === "" ? articleData?.description : description}", "price": "${price === 0 ? articleData?.price : price}", "imageUrl": "${image === {} ? articleData && articleData.imageUrl : ""}", "userId": "${articleData?.userId}", "category": "${category === "" ? articleData?.category : category}", "quantity": "${quantity === 0 ? articleData.quantity : quantity}"}`)
         file.append('image', image);
-        const config= {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
+
+        const art = {
+            title: title === "" ? articleData?.title : title,
+            description: description === "" ? articleData?.description : description,
+            price: price === 0 ? articleData?.price : price,
+            userId: articleData?.userId,
+            imageUrl: articleData && articleData.imageUrl,
+            category: category === "" ? articleData?.category : category,
+            quantity: quantity === 0 ? articleData.quantity : quantity
         }
 
 
-        
+        console.log(image)
 
-        axios.put("http://localhost:3000/api/article/"+id,file, config, {
-            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
-        })
-            .then((res) => {
-                console.log(res)
-                window.location.href = `/articles/${id}`
-            })
-            .catch((err) => (err));
+
+        const config= {
+            headers: {
+                'content-type': 'multipart/form-data',
+                'authorization': `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }
+
+        const conf = {
+                headers: {
+                    'authorization': `Bearer ${sessionStorage.getItem('token')}`
+                }
+            }
+
+        if(image !== null){
+
+            axios.put("http://localhost:3000/api/article/"+id,file, config)
+                .then((res) => {
+                    console.log(res)
+                    window.location.href = `/articles/${id}`
+                })
+                .catch((err) => (err));
+        }
+        else {
+            axios.put("http://localhost:3000/api/article/"+id, art, conf)
+                .then((res) => {
+                    console.log(res)
+                    window.location.href = `/articles/${id}`
+                })
+                .catch((err) => (err));
+        }
     }
 
     return (
@@ -162,6 +192,14 @@ function Edit() {
                     defaultValue={articleData && articleData.description}
                     onChange={(e) => setDescription(e.target.value)}
                 ></DescriptionArea>
+                <label htmlFor="">Quantité</label>
+                <PriceInput 
+                    type="number" 
+                    name="quantity"
+                    defaultValue={articleData && articleData.quantity}
+                    // placeholder="0"
+                    onChange={(e) => setQuantity(e.target.value)}
+                />
                 <label htmlFor="">Prix en fcfa:</label>
                 <PriceInput 
                     type="number" 

@@ -11,6 +11,8 @@ import Articles from './pages/Articles';
 import Article from './pages/Article';
 import Edit from './components/Edit'
 import AddArticle from './components/AddArticle'
+import Footer from './components/Footer';
+import Contacts from './pages/Contacts';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -27,22 +29,32 @@ ReactDOM.render(
         <Route exact path='/signup'>
           <Signup />
         </Route>
-        <Route exact path="/articles">
-          <Articles />
-        </Route>
-        <Route exact path="/articles/:id">
-          <Article />
-        </Route>
-        <Route exact path="/articles/:id/edit">
-          <Edit />
-        </Route>
-        <Route exact path="/articles-post">
-          <AddArticle />
-        </Route>
+        {sessionStorage.getItem('token') && 
+        <div>
+          <Route exact path="/articles">
+            <Articles />
+          </Route> 
+          <Route exact path="/articles/:id">
+            <Article />
+          </Route>
+          <Route exact path="/articles/:id/edit">
+            <Edit />
+          </Route>
+          <Route exact path="/articles-post">
+            <AddArticle /> 
+          </Route>
+          <Route exact path="/contacts">
+            <Contacts /> 
+          </Route>
+        </div>}
+        <Route exact path="/contacts">
+            <Contacts /> 
+          </Route>
         <Route path="">
           <Error />
         </Route>
       </Switch>
+      <Footer />
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

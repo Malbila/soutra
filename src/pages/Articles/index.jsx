@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import Category from "../../components/Category";
 
 const Container = styled.div`
     position: relative;
@@ -31,7 +30,6 @@ const Article = styled.div`
     flex-wrap: wrap;
     align-items: flex-start;
 	justify-content: center;
-    padding: 50px;
     position: relative;
 `
 const Image = styled.img`
@@ -40,7 +38,8 @@ const Image = styled.img`
     margin: 32px;
     padding: 32px;
     align-self: center;
-    background-color: #96450D;
+    //background-color: #96450D;
+    background-color: white;
     border-radius: 25px;
     transition: 0.7s;
     &:hover {
@@ -69,6 +68,7 @@ const ItemWrapper = styled(Link)`
 `
 
 const ItemInfo = styled.div`
+    opacity: 0;
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -78,13 +78,24 @@ const ItemInfo = styled.div`
     bottom: 32px;
     left: 32px;
     border-radius: 0 0 25px 25px;
-    height: 40%;
+    height: 60%;
     width: 364px;
     background-color: rgb(0, 0, 0, 0.8);
+    transition: 1s;
+    &:hover {
+        opacity: 1;
+    }
+`
+
+const Header = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 
 function Articles() {
     const [ data, setData ] = useState([])
+    const [ error, setError ] = useState(false)
 
 // ************************************************** Data fetching *************************************************
 
@@ -96,58 +107,20 @@ function Articles() {
             })
             const data = await response.json()
             setData(data)
+            setError(false)
           } catch(error) {
             console.log(error)
+            setError(true)
           } 
         }
         fetchData()
     }, [])
 
-  
-
-    const articlesData = data && data
 
 
-    // ******************************************* Category filter ****************************************************
-
-    const category = articlesData.reduce(
-      (acc, item) => acc.includes(item.category) ? acc: acc.concat(item.category),
-      []
-    )
-
-    // ****************************************************** Conter ***********************************************
-
-    const number = () => {
-      let i = 0
-      //let cat = ''
-      const categories = []
-      for(let m = 0; m<=category.length-1; m++) {
-        for(let n = 0; n<=articlesData.length-1; n++) {
-            if(articlesData[n].category === category[m]){
-            i += 1
-          }
-        }
-        categories.push({ category: category[m], number: i})
-        i = 0
-      }
-      return categories
+    if(error) {
+        return <Container><div>Aucun article</div></Container>
     }
-// *********************************************** Category number *******************************************
-
-    const categoryNumber = (cat) => {
-        let i = 0
-        for(let n = 0; n<=articlesData.length-1; n++) {
-            if(articlesData[n].category === cat){
-                i += 1
-            }
-        }
-        return i
-    }
-    
-
-    /*,{
-                headers: {authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWViMDY3MTc0ZDU1MDQ4MDdjYjVlNjkiLCJpYXQiOjE2NDM2NDA1NjIsImV4cCI6MTY0MzcyNjk2Mn0.OxbPJ4hyOY3o9wqF-EQH41Y8_osrHFIiyFXogxrD6HM"}
-            }*/
 
     
     return data.length !== 0 ? (
@@ -155,7 +128,7 @@ function Articles() {
         <Link to={`/articles-post`}>
             <PostLink>Add Item</PostLink>
         </Link>
-        <h2>Articles</h2>
+        <Header><h1>Articles</h1></Header>
         <Article>
             { data.map(item => (
             <ItemWrapper key={`${item._id}`} to={`/articles/${item._id}`}>
@@ -163,7 +136,7 @@ function Articles() {
                 <ItemInfo>
                     <ItemLabel>{item.title}</ItemLabel>
                     <ItemLabel>{`${item.price} fcfa`}</ItemLabel>
-                    <ItemLabel>{`Disponibles : ${categoryNumber(item.category)}`}</ItemLabel>
+                    <ItemLabel>{`Disponibles : ${item.quantity}`}</ItemLabel>
                 </ItemInfo>
             </ItemWrapper>
             ))}

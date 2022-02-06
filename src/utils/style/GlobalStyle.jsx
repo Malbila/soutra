@@ -6,7 +6,8 @@ const StyledGlobalStyle = createGlobalStyle`
 	}
 
 	body {
-        background-color: white;
+        //background-color: white;
+		background-color: #cfd1d1;
 	}
 `
 

@@ -68,7 +68,8 @@ function Signup() {
             setTextValue("")
             setPassValue("")
             setConfirmValue("")
-        })
+            window.location.href = '/login'
+        }).catch(err => console.log(err))
     }
 
 

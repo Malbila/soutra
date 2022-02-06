@@ -60,6 +60,17 @@
       return categories
     }
 
+    
+    const categoryNumber = (cat) => {
+      let i = 0
+      for(let n = 0; n<=articlesData.length-1; n++) {
+          if(articlesData[n].category === cat){
+              i += 1
+          }
+      }
+      return i
+  }
+
 
     return (
         <div>
