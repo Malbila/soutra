@@ -6,59 +6,70 @@ const Background = styled.div`
   background: url(${bg});
   // background: rgba(20, 75, 100, 0.75);
   top: 0px;
-  height: 40vh;
+  height: 20vh;
   position: relative;
+  @media (max-width: 600px) {
+    height: 40vh;
+  }
 
 `
 const Container = styled.p`
   position: absolute;
-  top: 10%;
   left: 15%;
   right: 15%;
   font-size: 40px;
-  //color: white;
   color: #eceaea;
-  animation: titre ease 7s ;
-  @keyframes titre {
-    0% {
-        opacity: 0;
-        transform: scale(0.5);
-        transform: translateY(-100px,0px);
-        transform: rotate(120deg);
-    }
-    33% {
-        opacity: 0.5;
-        transform: translate(50px,50px);
-        transform: scale(1.5);
-        transform: rotate(240deg);
-    }
-    66% {
-        opacity: 1;
-        transform: translate(0pxpx, 0px);
-        transform: rotate(360deg);
-    }
+  @media (min-width: 500px) {
+    left: 20%;
+    top: 10%;
+    animation: titre ease 5s ;
+    @keyframes titre {
+      0% {
+          opacity: 0;
+          transform: scale(0.5);
+          transform: translateX(300px);
+      }
+      50% {
+          opacity: 0.5;
+          transform: translateX(200px);
+          transform: scale(1.5);
+      }
+      66% {
+          opacity: 0.75;
+      }
+    } 
   }
 `
 const BodyWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
+  align-items: center;
   justify-content: center;
-  margin: 15px 60px;
+  margin: 15px 0px;
 `
 
 
 const Paragraph = styled.p`
   font-size: 22px;
   word-spacing: 10px;
+  max-width: 500px;
   padding: 60px;
   background-color: white;
-  margin-left: 32px;
+  padding: 12px;
+  @media (min-width: 480px){
+    margin-left: 32px;
+    padding: 32px;
+  }
 `
 const Image = styled.img`
-  padding: 0 60px;
+  padding: 0 40px;
   background-color: white;
   border-radius: 32px;
-  margin-right: 32px;
+  margin: 10px;
+  @media (max-width: 480px) {
+    padding: 0px
+  }
 `
 const Details = styled.p`
   opacity: 0;
@@ -83,9 +94,9 @@ function Home() {
     return (
       <div>
         <Background>
-          <Container>WELCOME TO OUR WEB APPLICATION &#128525;</Container>
+          <Container>WELCOME TO OUR WEB APPLICATION</Container>
         </Background>
-        <h2 style={{color: "#7451eb"}}>Récuperez vos besoins et on s'occupe de tout</h2>
+        <h2 style={{color: "#7451eb"}}>Récuperez vos besoins et on s'occupe du reste, avec le meilleur service</h2>
         <BodyWrapper>
           <DetailLogo>
             <Image src={logo} alt="logo" />

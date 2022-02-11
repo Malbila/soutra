@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useState } from "react"
+import { useParams } from "react-router-dom"
 import styled from "styled-components"
 
 const EditWrapper = styled.div`
@@ -53,18 +54,6 @@ const FileInput = styled.input`
         transform: scale(1.05);
     }
 `
-
-const DescriptionArea = styled.textarea`
-    margin: 10px 0;
-    width: 300px;
-    height: 100px;
-    border-radius: 10px;
-    font-size: 18px;
-    &:focus {
-        border: 3px solid darkblue;
-    }
-`
-
 const SaveButton = styled.button`
     margin: 10px 0;
     width: 100px;
@@ -79,12 +68,12 @@ const SaveButton = styled.button`
     }
 `
 
-function AddArticle() {
+function AddSameCategory() {
+    const { category } = useParams()
     const [ title, setTitle ] = useState('')
-    const [ category, setCategory ] = useState('')
-    const [ description, setDescription ] = useState('')
     const [ price, setPrice ] = useState(0)
     const [ quantity, setQuantity ] = useState(0)
+    const [ pointure, setPointure ] = useState(0)
     const [ image, setImageUrl ] = useState({})
 
     
@@ -96,14 +85,15 @@ function AddArticle() {
         }
         return ID;
       }
-
+      
     const userId = makeId()
 
     function handlePost(e) {
         e.preventDefault();
         const file = new FormData();
-        file.append("article", `{ "title": "${title}", "description": "${description}", "price": "${price}", "imageUrl": "", "userId":"${userId}", "category": "${category}", "quantity": "${quantity}"}`)
+        file.append("article", `{ "title": "${title}", "price": "${price}", "imageUrl": "", "userId":"${userId}", "category": "${ category }", "quantity": "${quantity}", "pointure" : "${pointure}"}`)
         file.append('image', image);
+
         const config= {
             headers: {
                 'content-type': 'multipart/form-data',
@@ -111,12 +101,9 @@ function AddArticle() {
             }
         }
 
- 
-        
-
         axios.post("http://localhost:3000/api/article",file, config)
-            .then(() => window.location.href = '/articles')
-            .catch((err) => (err));
+        .then(() => window.location.href = `/categories/${category}`)
+        .catch((err) => (err));
     }
 
     return (
@@ -130,13 +117,6 @@ function AddArticle() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                 />
-                <label htmlFor="">Categorie</label>
-                <TitleInput 
-                    type="text" 
-                    placeholder="category"
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                />
                 <label>Chargez une image:</label>
                 <FileInput 
                     type="file"
@@ -145,23 +125,24 @@ function AddArticle() {
                     accept="png, jpg, jpeg"
                     required
                 />
-                <label>Description:</label>
-                <DescriptionArea
-                    placeholder="Décrivez votre objet"
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                ></DescriptionArea>
+                <label>Pointure:</label>
+                <PriceInput 
+                    type="number" 
+                    name="pointure"
+                    placeholder="pointure"
+                    onChange={(e) => setPointure(e.target.value)}
+                />
                 <label htmlFor="">Quantité</label>
                 <PriceInput 
                     type="number" 
                     name="quantity"
-                    placeholder="0"
+                    placeholder="quantité"
                     onChange={(e) => setQuantity(e.target.value)}
                 />
                 <label htmlFor="">Prix en fcfa:</label>
                 <PriceInput 
                     type="number" 
-                    placeholder="0"
+                    placeholder="prix"
                     onChange={(e) => setPrice(e.target.value)}
                     required
                 />
@@ -171,4 +152,4 @@ function AddArticle() {
     )
 }
 
-export default AddArticle
+export default AddSameCategory

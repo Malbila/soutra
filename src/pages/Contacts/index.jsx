@@ -26,6 +26,11 @@ const FormWrapper = styled.form`
     label {
         font-size: 18px;
     }
+    @media (max-width: 480px) {
+        width: 90%;
+        margin: 25px 5px;
+        padding: 10px;
+    }
 `
 
 const LinksWrapper = styled.div`
@@ -38,6 +43,10 @@ const LinksWrapper = styled.div`
     max-width: 500px;
     background-color: white;
     border-radius: 25px;
+    @media (max-width: 480px){
+        margin: 10px 0;
+        margin: 25px 5px;
+    }
 `
 
 const InputContainer = styled.input`
@@ -46,10 +55,13 @@ const InputContainer = styled.input`
     min-width: 200px;
     margin: 25px 0;
     font-size: 18px;
-    border-radius: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     &:focus {
         border: 3px solid blue;
+    }
+    @media (max-width: 480px){
+        margin: 10px 0;
+        width: 96%;
     }
 `
 
@@ -59,16 +71,20 @@ const AreaContainer = styled.textarea`
     margin: 25px 0;
     min-width: 200px;
     font-size: 18px;
-    border-radius: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
     &:focus {
         border: 3px solid blue;
+    }
+    @media (max-width: 480px){
+        margin: 10px 0;
+        width: 96%;
+        height: 120px;
     }
 `
 
 const Button = styled.button`
     width: 80px;
-    height: 50px;
+    height: 40px;
     margin: 25px 0;
     border-radius: 10px;
     color: white;
@@ -77,6 +93,9 @@ const Button = styled.button`
     transition: 1s;
     &:hover {
         transform: scale(1.05);
+    }
+    @media (max-width: 480px) {
+        margin: 10px 0;
     }
 `
 
@@ -104,6 +123,7 @@ function Contacts() {
     return (
         <ContatsWrapper>
             <FormWrapper>
+                <h2 style={{color:'#1877f2'}}>Laisser un message</h2>
                 <label htmlFor="name">Votre nom complet:</label>
                 <InputContainer type="text" placeholder="Full name" />
                 <label htmlFor="message">Votre message:</label>
@@ -111,8 +131,9 @@ function Contacts() {
                 <Button type="submit">Send</Button>
             </FormWrapper>
             <LinksWrapper>
+                <h2 style={{color:'#1877f2'}}>News</h2>
                 <p style={{fontSize: '20px'}}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt dolores voluptas id optio, dicta quibusdam, mollitia totam fugiat laboriosam qui enim sapiente fuga adipisci iure debitis possimus. A, asperiores et. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nihil facere, neque hic itaque atque repellat corporis voluptas cumque suscipit illo quod! Harum, dolor. Aliquid vel magni deserunt, excepturi dolore corporis.</p>
-                <h1>Réseaux sociaux</h1>
+                <h1 style={{color:'#1877f2'}}>Réseaux sociaux</h1>
                 <FooterWrapper>
                     <SpanDiv>
                         <Span>WhatsApp</Span>

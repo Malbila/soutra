@@ -13,6 +13,9 @@ const Span = styled.span`
     margin: 20px 50px;
     font-size: 20px;
     color: #B37583;
+    @media (max-width: 480px) {
+        margin: 20px 10px;
+    }
 `
 
 

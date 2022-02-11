@@ -1,6 +1,7 @@
 import React, {  useState } from "react";
 import styled from "styled-components";
 import axios from 'axios'
+import { Loader } from "../../utils/style/Atoms";
 
 export const Title = styled.h1`
     text-align: center;
@@ -54,22 +55,36 @@ function Signup() {
     const [ textValue, setTextValue ] = useState('')
     const [ passValue, setPassValue ] = useState('')
     const [ confirmValue, setConfirmValue ] = useState('')
-    const [ isEditing, setIsEditing ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ error, setError ] = useState(false)
+    const [ exist, setExist ] = useState(false)
 
     const isValid = passValue !== ""  && confirmValue !== "" && passValue === confirmValue
 
-    function handleSubmit(e) {
+    
+
+    async function handleSubmit(e) {
         e.preventDefault()
-        axios.post('http://localhost:3000/api/auth/signup', {
-            email:textValue,
-            password: passValue,
-        }).then(() => {
-            console.log("Succès")
-            setTextValue("")
-            setPassValue("")
-            setConfirmValue("")
-            window.location.href = '/login'
-        }).catch(err => console.log(err))
+        setIsLoading(true)
+        if(isValid) {
+            await axios.post('http://localhost:3000/api/auth/signup', {
+                email:textValue,
+                password: passValue,
+            }).then(() => {
+                setTextValue("")
+                setPassValue("")
+                setConfirmValue("")
+                window.location.href = '/login'
+            }).catch(
+                () => {
+                setIsLoading(false)
+                setError(setExist(true))
+            })
+        }
+        else {
+            setIsLoading(false)
+            setError(true)
+        }
     }
 
 
@@ -77,13 +92,14 @@ function Signup() {
     return (
         <FormWrapper>
             <Title>Inscription</Title>
-            <FormLabel onSubmit={(e) =>isValid ? handleSubmit(e) : console.log('Mot de passe incorrect')}>
+            <FormLabel onSubmit={(e) => handleSubmit(e)}>
                 <InputLabel 
                     type="email"
                     placeholder="Email" 
                     value={textValue}
                     onChange={(e) => setTextValue(e.target.value)}
                     autoFocus
+                    onFocus={() => {setError(false); setExist(false)}}
                     required
                 />
                 <InputLabel
@@ -91,18 +107,21 @@ function Signup() {
                     placeholder="Password" 
                     value={passValue}
                     onChange={(e) => setPassValue(e.target.value)}
+                    onFocus={() => {setError(false); setExist(false)}}
                     required
-                    onMouseDown={() => console.log('ça y est')}
                 />
                 <InputLabel
                     type="password" 
                     placeholder="Confirm password" 
                     value={confirmValue}
                     onChange={(e) => setConfirmValue(e.target.value)}
+                    onFocus={() => {setError(false); setExist(false)}}
                     required
-                    onMouseDown={() => setIsEditing(true)}
                 />
-                <Button type="submit" disabled={!isValid}>Signup</Button>
+                <Button type="submit" >Signup</Button>
+                { isLoading ? <Loader /> : null}
+                { exist ? <h3 style={{color: "red"}}>Il semblerait que ce mot de passe existe déjà</h3> : null}
+                { error ? <h3 style={{color: "red"}}>Une erreur s'est produite. <br />Renseignez correctemet vos identifiants </h3> : null}
             </FormLabel>
         </FormWrapper>
     )

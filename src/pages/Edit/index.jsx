@@ -55,17 +55,6 @@ const FileInput = styled.input`
     }
 `
 
-const DescriptionArea = styled.textarea`
-    margin: 10px 0;
-    width: 300px;
-    height: 100px;
-    border-radius: 10px;
-    font-size: 18px;
-    &:focus {
-        border: 3px solid darkblue;
-    }
-`
-
 const SaveButton = styled.button`
     margin: 10px 0;
     width: 100px;
@@ -81,13 +70,13 @@ const SaveButton = styled.button`
 `
 
 function Edit() {
-    const { id } = useParams()
+    const { name, id } = useParams()
     const [ data, setData ] = useState([])
     const [ title, setTitle ] = useState('')
     const [ category, setCategory ] = useState('')
-    const [ description, setDescription ] = useState('')
     const [ price, setPrice ] = useState(0)
     const [ quantity, setQuantity ] = useState(0)
+    const[ pointure, setPointure ] = useState(0)
     const [ image, setThing ] = useState(null)
 
     useEffect(() => {
@@ -106,26 +95,22 @@ function Edit() {
     }, [])
     
     const articleData = data.find(article => article._id === id)
-    console.log(articleData?.imageUrl)
 
-    function handleSubmit(e) {
+   async function handleSubmit(e) {
         e.preventDefault();
         const file = new FormData();
-        file.append("article", `{ "_id": "${id}", "title": "${title === "" ? articleData?.title : title}", "description": "${description === "" ? articleData?.description : description}", "price": "${price === 0 ? articleData?.price : price}", "imageUrl": "${image === {} ? articleData && articleData.imageUrl : ""}", "userId": "${articleData?.userId}", "category": "${category === "" ? articleData?.category : category}", "quantity": "${quantity === 0 ? articleData.quantity : quantity}"}`)
+        file.append("article", `{ "_id": "${id}", "title": "${title === "" ? articleData?.title : title}", "pointure": "${pointure === 0 ? articleData?.pointure : pointure}", "price": "${price === 0 ? articleData?.price : price}", "imageUrl": "${image === {} ? articleData && articleData.imageUrl : ""}", "userId": "${articleData?.userId}", "category": "${category === "" ? articleData?.category : category}", "quantity": "${quantity === 0 ? articleData.quantity : quantity}"}`)
         file.append('image', image);
 
         const art = {
             title: title === "" ? articleData?.title : title,
-            description: description === "" ? articleData?.description : description,
+            pointure: pointure === 0 ? articleData?.pointure : pointure,
             price: price === 0 ? articleData?.price : price,
             userId: articleData?.userId,
             imageUrl: articleData && articleData.imageUrl,
             category: category === "" ? articleData?.category : category,
             quantity: quantity === 0 ? articleData.quantity : quantity
         }
-
-
-        console.log(image)
 
 
         const config= {
@@ -143,18 +128,18 @@ function Edit() {
 
         if(image !== null){
 
-            axios.put("http://localhost:3000/api/article/"+id,file, config)
+            await axios.put("http://localhost:3000/api/article/"+id,file, config)
                 .then((res) => {
                     console.log(res)
-                    window.location.href = `/articles/${id}`
+                    window.location.href = `/categories/item-${name}/${id}`
                 })
                 .catch((err) => (err));
         }
         else {
-            axios.put("http://localhost:3000/api/article/"+id, art, conf)
+            await axios.put("http://localhost:3000/api/article/"+id, art, conf)
                 .then((res) => {
                     console.log(res)
-                    window.location.href = `/articles/${id}`
+                    window.location.href = `/categories/item-${name}/${id}`
                 })
                 .catch((err) => (err));
         }
@@ -186,12 +171,14 @@ function Edit() {
                     defaultValue={articleData && articleData.imageUrl}
                     onChange={(e) => setThing(e.target.files[0])}
                 />
-                <label>Description:</label>
-                <DescriptionArea
-                    name="description"
-                    defaultValue={articleData && articleData.description}
-                    onChange={(e) => setDescription(e.target.value)}
-                ></DescriptionArea>
+                <label>Pointure:</label>
+                <PriceInput 
+                    type="number" 
+                    name="pointure"
+                    defaultValue={articleData && articleData.pointure}
+                    // placeholder="0"
+                    onChange={(e) => setPointure(e.target.value)}
+                />
                 <label htmlFor="">Quantité</label>
                 <PriceInput 
                     type="number" 

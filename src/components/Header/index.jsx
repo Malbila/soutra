@@ -9,7 +9,6 @@ const HeaderWrapper = styled.div`
     background-color: black;
     display: flex;
     top: 0px;
-    position: fixed-top;
     flex-direction:row; 
     position: relative;
     width: 100%;
@@ -23,12 +22,15 @@ const NavLink = styled(Link)`
   font-size: 20px;
   text-align: center;
   @media (max-width: 480px) {
-    display: none;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    text-align: center;
 }
 `
 const RightNav = styled.div`
     position: absolute;
-    top: 10px;
+    top: 20px;
     right: 20px;
 `
 
@@ -46,6 +48,16 @@ const SingleLogo = styled.img`
     border-radius: 10px;
 `
 
+const Headers = styled.header`
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    margin: 20px 10px;
+    @media (max-width: 480px) {
+        display: none;
+    }
+`
+
 function Header() {
 
     const logout = (e) => {
@@ -57,7 +69,7 @@ function Header() {
     return !sessionStorage.getItem('token') ? (
         <HeaderWrapper>
             <NavLink to='/'><Logo src={logo} alt="logo" /></NavLink>
-            <header style={{fontSize: "20px", textAlign: "center", color: "white", margin: "20px 10px"}}>SOUTRA GROUP</header>
+            <Headers>SOUTRA GROUP</Headers>
             <RightNav>
                 {/* <NavLink to='/'>Accueil</NavLink> */}
                 <NavLink to='/login'>Login</NavLink>
@@ -67,7 +79,7 @@ function Header() {
     ) : (
         <HeaderWrapper>
             <SingleLogo src={logo} alt="logo" />
-            <header style={{fontSize: "20px", textAlign: "center", color: "white", margin: "20px 0px"}}>SOUTRA GROUP</header>
+            <Headers>SOUTRA GROUP</Headers>
             <RightNav>
                 <NavLink to='/' onClick={(e) => logout(e)}>Déconnexion</NavLink>
             </RightNav>

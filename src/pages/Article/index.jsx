@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
 import axios from "axios"
+import { Loader } from "../../utils/style/Atoms"
 
 const ArticleWrapper = styled.div`
     position: relative;
@@ -65,6 +66,19 @@ const PopButton = styled.button`
         transform: scale(1.05);
     }
 `
+const PushButton = styled.button`
+    height: 40px;
+    width: 150px;
+    font-size: 1.2rem;
+    margin: 0 15px;
+    color: white;
+    background-color: #2759f5;
+    border-radius: 10px;
+    transition: 0.7s;
+    &:hover {
+        transform: scale(1.05);
+    }
+`
 
 const SpanWrapper = styled.div`
     display: flex;
@@ -84,10 +98,18 @@ const Back = styled(Link)`
     text-decoration: none;
     color: blue;
 `
+const LoaderWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 
 function Article() {
-    const { id } = useParams()
+    const { name, id } = useParams()
     const [ data, setData ] = useState([])
+    const [ quant, setQuant ] = useState(0)
+    const [ isLoading, setIsLoading ] = useState(true)
+     const [ error, setError ] = useState(false)
 
 
     useEffect(() => {
@@ -98,69 +120,95 @@ function Article() {
               })
               const data = await response.json()
               setData(data)
+              setIsLoading(false)
+              setQuant(data.quantity)
             } catch (err) {
               console.log(err)
+              setError(true)
             } 
           }
     fetchData()
-    }, [])
+    }, [id])
 
-    const articleData = data 
-    //const articleData = data.find(article => article._id === id)
+    const articleData = data
+    
    
-    const handleDelete = (e) => {
+    const handleDelete = async (e) => {
         e.preventDefault()
-        axios.delete('http://localhost:3000/api/article/' +id, {
+       await axios.delete('http://localhost:3000/api/article/' +id, {
             headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
         })
-            .then(() => {
-                window.location.href = '/articles'
-            })
-            .catch(err => console.log(err))
+        .then(() => {
+            window.location.href = `/categories/${name}`
+        })
+        .catch(err => console.log(err))
     }
 
-    const handleReduce = (e) => {
+    const handleReduce = async (e) => {
         e.preventDefault()
         const data = {
-            quantity: articleData.quantity - 1
+            quantity: quant - 1
         }
 
-        //console.log(data)
-
-        axios.put('http://localhost:3000/api/article/'+id, data, {
+       await axios.put('http://localhost:3000/api/article/'+id, data, {
             headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
         })
-            .then((res) =>
-                console.log(res),
-                window.location.reload()
-            )
-            .catch(err => console.log(err))
+        .then((res) =>
+            console.log(res),
+            setQuant(quant-1)
+        )
+        .catch(err => console.log(err))
     }
     
+    const handleAdd = async (e) => {
+        e.preventDefault()
+        const data = {
+            quantity: quant + 1
+        }
 
-    return   articleData !== undefined ?  (
-        <ArticleWrapper>
-            <Back to={`/articles`}>{`<<< `}Retour</Back>
-            <Image src={articleData && articleData.imageUrl} alt="article" />
-            <SpanWrapper>
-                <Span><b>Nom</b>: { articleData && articleData.title}</Span> 
-                <Span><b>Prix</b>: {`${articleData && articleData.price} fcfa`} </Span>
-                <Span><b>Quantité</b>: {articleData && articleData.quantity}</Span>
-            </SpanWrapper>
-            <ButtonWrapper>
-                <Link to={`/articles/${articleData?._id}/edit`}>
-                    <EditButton>Modifier</EditButton>
-                </Link>
-                <RemoveButton onClick={(e) => {window.confirm("Voulez-vous vraiment supprimer ct objet") && handleDelete(e)}}>Supprimer</RemoveButton>
-                <PopButton onClick={(e) => articleData.quantity > 1 ? handleReduce(e) : handleDelete(e)}>Décrémenter</PopButton>
-                { articleData.quantity === 1 ? <span>En cliquant sur <b>décrémenter</b>, vous supprimez définitivement l'article</span> : ''}
-            </ButtonWrapper>
-        </ArticleWrapper>
-    ) : (
+       await axios.put('http://localhost:3000/api/article/'+id, data, {
+            headers: {authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
+        .then((res) =>
+            console.log(res),
+            setQuant(quant+1)
+        )
+        .catch(err => console.log(err))
+    }
+
+    if(error) {
+        return <span>Oups... Il y a un problème</span>
+    }
+
+    return   (
         <div>
-            <h2>Data is loading</h2>
+            { isLoading ? (
+            <LoaderWrapper>
+                <Loader />
+            </LoaderWrapper>
+            ) : (
+            <ArticleWrapper>
+                <Back to={`/categories/${name}`}>{`<<< `}Retour</Back>
+                <Image src={articleData && articleData.imageUrl} alt="article" />
+                <SpanWrapper>
+                    <Span><b>Nom</b>: { articleData && articleData.title}</Span> 
+                    <Span><b>Prix</b>: {`${articleData && articleData.price} fcfa`} </Span>
+                    <Span><b>Pointure</b>: {`${articleData.pointure}`}</Span>
+                    <Span><b>Quantité</b>: {quant}</Span>
+                </SpanWrapper>
+                <ButtonWrapper>
+                    <Link to={`/categories/item-${name}/${articleData?._id}/edit`}>
+                        <EditButton>Modifier</EditButton>
+                    </Link>
+                    <RemoveButton onClick={(e) => {window.confirm("Voulez-vous vraiment supprimer ct objet") && handleDelete(e)}}>Supprimer</RemoveButton>
+                    <PushButton onClick={(e) =>  handleAdd(e)}>Ajouter</PushButton>
+                    <PopButton onClick={(e) => quant > 1 ? handleReduce(e) : handleDelete(e)}>Enlever</PopButton>
+                    { quant === 1 ? <span style={{fontSize: "18px", color: 'red', margin: '10px'}}><br /> En cliquant sur <b style={{color: 'black'}}>Enlever</b>, vous supprimez définitivement l'article</span> : ''}
+                </ButtonWrapper>
+            </ArticleWrapper>
+            )}
         </div>
-    )
+    ) 
 }
 
 export default Article
